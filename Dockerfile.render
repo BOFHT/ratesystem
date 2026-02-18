@@ -1,0 +1,41 @@
+# Dockerfile.render - 为Render平台优化
+FROM python:3.9-slim
+
+WORKDIR /app
+
+# 设置Python环境变量
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
+
+# 安装系统依赖（最小化）
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# 复制依赖文件
+COPY requirements.txt .
+
+# 安装Python依赖（使用清华镜像加速）
+RUN pip install --no-cache-dir -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+# 复制应用代码
+COPY backend/ ./backend/
+COPY config.py .
+COPY start_server.py .
+
+# 创建数据目录
+RUN mkdir -p data && chmod 777 data
+
+# 暴露端口（Render使用环境变量PORT）
+EXPOSE 8000
+
+# 健康检查（Render会自动监控）
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8000/health || exit 1
+
+# 启动命令（使用环境变量PORT）
+CMD ["python", "start_server.py"]

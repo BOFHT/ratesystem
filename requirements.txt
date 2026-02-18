@@ -1,0 +1,28 @@
+# 项目识别智能评分系统 - 基础依赖
+# 精简版，适合Render免费部署
+
+# FastAPI及相关依赖
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.5.0
+
+# 数据库
+sqlalchemy==2.0.23
+
+# 数据处理
+numpy==1.24.3
+pandas==2.1.4
+
+# 机器学习（简化版）
+scikit-learn==1.3.2
+
+# 网络请求
+httpx==0.25.1
+requests==2.31.0
+
+# 配置文件管理
+python-dotenv==1.0.0
+
+# 其他工具
+python-multipart==0.0.6
+jinja2==3.1.2
